@@ -1,0 +1,25 @@
+news_sites:
+  lostiempos:
+    url: https://www.lostiempos.com
+    queries:
+      homepage_article_links: '.field-content a'
+      article_body: '.field-item p'
+      article_title: '.node-title'
+  eldeber:
+    url: https://eldeber.com.bo
+    queries:
+      homepage_article_links: '.nota a'
+      article_body: '.text-editor p'
+      article_title: '.text h1'
+  eluniversal:
+    url: http://www.eluniversal.com.mx
+    queries:
+      homepage_article_links: '.field-content a'
+      article_body: '.field-name-body'
+      article_title: '.pane-content h1'
+  elpais:
+    url: https://elpais.com
+    queries:
+      homepage_article_links: '.headline a'
+      article_body: '.article_body'
+      article_title: '.article-header h1'
