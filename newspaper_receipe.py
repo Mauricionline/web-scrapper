@@ -2,6 +2,11 @@ import argparse
 from urllib.parse import urlparse
 import pandas as pd
 import logging
+import hashlib
+import nltk
+from nltk.corpus import stopwords
+
+stopwords = set(stopwords.words('spanish'))
 
 pd.options.display.max_rows = 30
 logging.basicConfig(level=logging.INFO)
@@ -16,6 +21,13 @@ def main(filename: str):
     df = _add_newspaper_uid_column(df, newspaper_uid)
     df = _extract_host(df)
     df = _fill_missing_titles(df)
+    df = _generate_uids_for_rows(df)
+    df = _remove_new_extra_lines_from_body(df)
+    df = _tokenize_column(df, 'title', 'n_tokens_title')
+    df = _tokenize_column(df, 'body', 'n_tokens_body')
+    df = _remove_duplicates_entries(df, 'title')
+    df = _drop_rows_with_missing_values(df)
+    _save_data(df, filename)
     return df
 
 
@@ -55,6 +67,62 @@ def _fill_missing_titles(df):
                       )
     df.loc[missing_titles_mask, 'title'] = missing_titles.loc[:, 'missing_titles']
     return df
+
+
+def _generate_uids_for_rows(df):
+    logger.info('Generating uids for each row')
+    uids = (df
+            .apply(lambda row: hashlib.md5(bytes(row['url'].encode())), axis=1)
+            .apply(lambda hash_object: hash_object.hexdigest())
+            )
+    df['uid'] = uids
+
+    return df.set_index('uid')
+
+
+def _remove_new_extra_lines_from_body(df):
+    logger.info('remove extra lines from body')
+    stripped_body = (df
+                     .apply(lambda row: row['body'], axis=1)
+                     .apply(lambda body: list(str(body)))
+                     .apply(lambda letters: list(map(lambda letter: letter.replace('\n', ''), letters)))
+                     .apply(lambda letters: list(map(lambda letter: letter.replace('\t', ''), letters)))
+                     .apply(lambda letters: list(map(lambda letter: letter.replace('\r', ''), letters)))
+                     .apply(lambda letter: ''.join(letter))
+                     )
+    df['body'] = stripped_body
+    return df
+
+
+def _tokenize_column(df, column_name, new_column_name):
+    logger.info(f'add tokenize column {new_column_name}')
+    new_column = (df
+                  .dropna()
+                  .apply(lambda row: nltk.word_tokenize(row[column_name]), axis=1)
+                  .apply(lambda tokens: list(filter(lambda token: token.isalpha(), tokens)))
+                  .apply(lambda tokens: list(map(lambda token: token.lower(), tokens)))
+                  .apply(lambda word_list: list(filter(lambda word: word not in stopwords, word_list)))
+                  .apply(lambda valid_word_list: len(valid_word_list))
+                  )
+    df[new_column_name] = new_column
+    return df
+
+
+def _remove_duplicates_entries(df, column_name):
+    logger.info('Removing duplicate entries')
+    df.drop_duplicates(subset=[column_name], keep='first', inplace=True)
+    return df
+
+
+def _drop_rows_with_missing_values(df):
+    logger.info('Dropping rows with missing values')
+    return df.dropna()
+
+
+def _save_data(df, filename):
+    clean_file_name = f'Clean_{filename}'
+    logger.info(f'Saving data at location {clean_file_name}')
+    df.to_csv(clean_file_name)
 
 
 if __name__ == '__main__':
