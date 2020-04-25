@@ -120,7 +120,7 @@ def _drop_rows_with_missing_values(df):
 
 
 def _save_data(df, filename):
-    clean_file_name = f'Clean_{filename}'
+    clean_file_name = f'clean_{filename}'
     logger.info(f'Saving data at location {clean_file_name}')
     df.to_csv(clean_file_name)
 
