@@ -17,7 +17,7 @@ def main(filename):
 
     for index, row in articles.iterrows():
         logger.info(f'Loading article uid {row["uid"]} into DB')
-        article = Article(row['uid'], row['body'], row['host'],
+        article = Article(row['uid'], row['category'], row['body'], row['host'],
                           row['newspaper_uid'], row['n_tokens_body'], row['n_tokens_title'],
                           row['title'], row['url']
                           )

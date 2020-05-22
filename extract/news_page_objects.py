@@ -55,3 +55,8 @@ class ArticlePage(NewsPage):
     @property
     def url(self):
         return self.__url
+
+    @property
+    def category(self):
+        result = self._select(self._queries['article_category'])
+        return result[0].text if len(result) else ''

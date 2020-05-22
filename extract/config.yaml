@@ -4,22 +4,53 @@ news_sites:
     queries:
       homepage_article_links: '.field-content a'
       article_body: '.field-item p'
-      article_title: '.node-title'
+      article_title: '.node-header h1'
+      article_category: '.subsection'
   eldeber:
     url: https://eldeber.com.bo
     queries:
       homepage_article_links: '.nota a'
       article_body: '.text-editor p'
       article_title: '.text h1'
+      article_category: '.top h4'
+
   eluniversal:
     url: http://www.eluniversal.com.mx
     queries:
       homepage_article_links: '.field-content a'
       article_body: '.field-name-body'
       article_title: '.pane-content h1'
+      article_category: ''
+
   elpais:
     url: https://elpais.com
     queries:
       homepage_article_links: '.headline a'
       article_body: '.article_body'
       article_title: '.article-header h1'
+      article_category: '.section-name'
+
+  opinion:
+    url: https://www.opinion.com.bo
+    queries:
+      homepage_article_links: '.article-data a'
+      article_body: '.body p'
+      article_title: '.title'
+      article_category: '.tag-item'
+
+  larazon:
+    url: https://www.la-razon.com
+    queries:
+      homepage_article_links: '.container-background a'
+      article_body: '.article-body'
+      article_title: '.article-header h1'
+      article_category: '.lr-category-title'
+
+  jornada:
+    url: https://jornada.com.bo
+    queries:
+      homepage_article_links: '.entry-title a'
+      article_body: '.article-body'
+      article_title: '.td-post-title h1'
+      article_category: '.entry-category'
+

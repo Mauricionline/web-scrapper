@@ -4,7 +4,10 @@ logging.basicConfig(level=logging.INFO)
 import subprocess
 
 logger = logging.getLogger(__name__)
-news_sites_uids = ['lostiempos', 'eldeber']
+news_sites_uids = ['lostiempos', 'eldeber', 'opinion', 'larazon', 'jornada']
+# news_sites_uids = ['opinion']
+# news_sites_uids = ['lostiempos']
+# news_sites_uids = ['larazon']
 
 
 def main() -> None:

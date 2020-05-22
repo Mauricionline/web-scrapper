@@ -22,12 +22,28 @@ def main(filename: str):
     df = _extract_host(df)
     df = _fill_missing_titles(df)
     df = _generate_uids_for_rows(df)
+    df = _remove_new_extra_lines_from_title(df)
     df = _remove_new_extra_lines_from_body(df)
+    df = _remove_new_extra_lines_from_category(df)
     df = _tokenize_column(df, 'title', 'n_tokens_title')
     df = _tokenize_column(df, 'body', 'n_tokens_body')
     df = _remove_duplicates_entries(df, 'title')
     df = _drop_rows_with_missing_values(df)
     _save_data(df, filename)
+    return df
+
+
+def _remove_new_extra_lines_from_category(df):
+    logger.info('remove extra lines from category')
+    stripped_category = (df
+                         .apply(lambda row: row['category'], axis=1)
+                         .apply(lambda body: list(str(body)))
+                         .apply(lambda letters: list(map(lambda letter: letter.replace('\n', ''), letters)))
+                         .apply(lambda letters: list(map(lambda letter: letter.replace('\t', ''), letters)))
+                         .apply(lambda letters: list(map(lambda letter: letter.replace('\r', ''), letters)))
+                         .apply(lambda letter: ''.join(letter))
+                         )
+    df['category'] = stripped_category
     return df
 
 
@@ -78,6 +94,21 @@ def _generate_uids_for_rows(df):
     df['uid'] = uids
 
     return df.set_index('uid')
+
+
+def _remove_new_extra_lines_from_title(df):
+    logger.info('remove extra lines from title')
+    stripped_body = (df
+                     .apply(lambda row: row['title'], axis=1)
+                     .apply(lambda letters: letters.strip())
+                     .apply(lambda title: list(str(title)))
+                     .apply(lambda letters: list(map(lambda letter: letter.replace('\n', ''), letters)))
+                     .apply(lambda letters: list(map(lambda letter: letter.replace('\t', ''), letters)))
+                     .apply(lambda letters: list(map(lambda letter: letter.replace('\r', ''), letters)))
+                     .apply(lambda letter: ''.join(letter))
+                     )
+    df['title'] = stripped_body
+    return df
 
 
 def _remove_new_extra_lines_from_body(df):
